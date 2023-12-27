@@ -1,0 +1,38 @@
+﻿<#
+.Synopsis
+    List assets
+
+.EXAMPLE
+    Get-TenableAssets -AccessKey "Access Key" -SecretKey "Secret Key"
+
+.NOTES
+    Modified by: Derek Hartman
+    Date: 8/21/2023
+
+#>
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Function Get-TenableAssets {
+    [CmdletBinding()]
+
+    param(
+        [Parameter(Mandatory = $True,
+            ValueFromPipeline = $True,
+            HelpMessage = "Enter your Access Key.")]
+        [string[]]$AccessKey,
+
+        [Parameter(Mandatory = $True,
+            ValueFromPipeline = $True,
+            HelpMessage = "Enter your Secret Key.")]
+        [string[]]$SecretKey
+    )
+
+    $Uri = 'https://cloud.tenable.com/assets'
+
+    $Header = @{
+        'X-ApiKeys' = "accessKey=$AccessKey;secretKey=$SecretKey"
+        'Accept'    = 'application/json';
+    }  
+
+    $Response = Invoke-RestMethod -Method Get -Uri $Uri -Headers $Header
+    Write-Output $Response.Assets
+}
